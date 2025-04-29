@@ -1,0 +1,79 @@
+* CUE Schema for Label Studio Predictions
+
+This project demonstrates how to use CUE to simplify complex JSON data structures needed for Label Studio annotations.
+
+** Motivation
+Label Studio requires a complex "predictions" JSON structure for pre-annotated data, which can be verbose and difficult to maintain. This project demonstrates how one could simply the json.  It:
+
+1. Allows writing simple sentiment annotations (Positive/Negative/Neutral)
+2. Automatically transforms them to Label Studio's required prediction format
+3. Maintains type safety through CUE's schema validation
+
+** Format Comparison
+
+*** Original Label Studio JSON (verbose)
+#+begin_src json
+{
+  "data": {
+    "reviewText": "The product exceeded my expectations..."
+  },
+  "predictions": [
+    {
+      "model_version": "1.0",
+      "result": [
+        {
+          "from_name": "sentiment",
+          "to_name": "my_text",
+          "type": "choices",
+          "value": {
+            "choices": [
+              "Positive"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+#+end_src
+
+*** Simplified CUE Format
+#+begin_src cue
+{
+  data: {
+    reviewText: "The product exceeded my expectations..."
+  }
+  sentiment: "Positive"
+}
+#+end_src
+
+The CUE format reduces 20+ lines to just 5, while maintaining all the necessary information.
+
+** Structure
+- =schema.cue=: Type definitions and validation constraints
+- =data.cue=: Simplified sentiment review data
+- =transform.cue=: Logic to convert to Label Studio format
+- =justfile=: Task automation
+
+** Quick Start
+
+#+begin_src shell
+  # Format CUE files
+  cue fmt *.cue
+
+  # Validate CUE files
+  cue vet *.cue
+
+  # Export transformed JSON
+  cue export --expression=output --out=json *.cue --outfile=transformed.json
+#+end_src
+
+** Benefits
+- More maintainable data representation (75% reduction in size)
+- Type safety through enums
+- Clear separation of concerns
+- Automatic format conversion
+
+** Links
+
+- https://labelstud.io/guide/predictions.html#Prepare-pre-annotations-for-Label-Studio
